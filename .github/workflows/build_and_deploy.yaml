@@ -1,13 +1,25 @@
 name: build-and-deploy-repeat-words
+
 on:
   push:
     branches:
       - main
       - feature/actions
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages and release.
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
-  build:
+  build_and_deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.pagesdeployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+    # prepare
       - name: checkout code
         uses: actions/checkout@v3
       - name: setup java
@@ -15,24 +27,34 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '11'
-      - name: build flutter app
+      - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
       - name: Get flutter packages
         run: flutter pub get
+    # build
       - name: build web
         run: flutter build web
       - name: build apk
         run: flutter build apk
-      - name: Upload APK as release
-        uses: actions/upload-artifact@v2
+    # release apk
+      - name: Upload apk to Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: app-release.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+          draft: false
+          prerelease: false
+    # upload pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload web artifacts
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: build/web
       - name: Deploy web version to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/web
-
+        id: pagesdeployment
+        uses: actions/deploy-pages@v1

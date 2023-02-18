@@ -1,0 +1,38 @@
+name: build-and-deploy-repeat-words
+on:
+  push:
+    branches:
+      - main
+      - feature/actions
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+      - name: setup java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - name: build flutter app
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Get flutter packages
+        run: flutter pub get
+      - name: build web
+        run: flutter build web
+      - name: build apk
+        run: flutter build apk
+      - name: Upload APK as release
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Deploy web version to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/web
+

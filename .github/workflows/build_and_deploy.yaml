@@ -35,8 +35,8 @@ jobs:
         run: flutter pub get
     # build
       - name: build web for github pages
-        # The --base-ref is defined so that hosting on github pages works.
-        run: flutter build web --base-ref /${{ github.event.repository.name }}/
+        # The --base-href is defined so that hosting on github pages works.
+        run: flutter build web --base-href /${{ github.event.repository.name }}/
       - name: build apk
         run: flutter build apk
     # release apk

@@ -40,12 +40,15 @@ jobs:
       - name: build apk
         run: flutter build apk
     # release apk
+      - name: make release tag
+        id: releasetag
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H-%M')"
       - name: Upload apk to Release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: test
+          tag_name: ${{ steps.releasetag.outputs.date }}
           files: |
             build/app/outputs/flutter-apk/app-release.apk
           draft: false

@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 const wordList = [
   // nouns
@@ -381,8 +383,11 @@ const wordList = [
   "olivgrün",
 ];
 
-void main() {
+Future<void> main() async {
   // debugPaintSizeEnabled = true;
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

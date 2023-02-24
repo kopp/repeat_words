@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 
 const wordList = [
@@ -537,6 +538,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _reportResult(bool success) {
+    final db = FirebaseFirestore.instance;
+    final report = <String, dynamic>{
+      "num_words": currentWords.length,
+      "words": currentWords,
+      "success": success,
+      "timestamp": DateTime.now(),
+    };
+    db.collection("results").add(report);
     setState(() {
       _results.add(success);
     });

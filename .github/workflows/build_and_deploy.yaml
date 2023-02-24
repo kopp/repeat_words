@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feature/actions
+      - feature/firebase
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages and release.
 permissions:
